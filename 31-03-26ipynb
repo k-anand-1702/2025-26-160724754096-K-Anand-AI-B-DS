@@ -1,0 +1,127 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyO7ERCZ0sdDwkMXICf1QtM1",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/k-anand-1702/2025-26-160724754096-K-Anand-AI-B-DS/blob/main/31-03-26ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.metrics import accuracy_score, classification_report\n",
+        "url = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\"\n",
+        "columns = [\n",
+        "    \"Pregnancies\", \"Glucose\", \"BloodPressure\", \"SkinThickness\",\n",
+        "    \"Insulin\", \"BMI\", \"DiabetesPedigreeFunction\", \"Age\", \"Outcome\"\n",
+        "]\n",
+        "data = pd.read_csv(url, names=columns)\n",
+        "cols_to_replace = [\"Glucose\", \"BloodPressure\", \"SkinThickness\", \"Insulin\", \"BMI\"]\n",
+        "data[cols_to_replace] = data[cols_to_replace].replace(0, np.nan)\n",
+        "data.fillna(data.median(), inplace=True)\n",
+        "X = data.drop(\"Outcome\", axis=1)\n",
+        "y = data[\"Outcome\"]\n",
+        "scaler = StandardScaler()\n",
+        "X_scaled = scaler.fit_transform(X)\n",
+        "X_train, X_test, y_train, y_test = train_test_split(\n",
+        "    X_scaled, y, test_size=0.2, random_state=42\n",
+        ")\n",
+        "\n",
+        "model = LogisticRegression(max_iter=1000)\n",
+        "model.fit(X_train, y_train)\n",
+        "y_pred = model.predict(X_test)\n",
+        "print(\"Model Accuracy:\", accuracy_score(y_test, y_pred))\n",
+        "print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))\n",
+        "print(\"\\nEnter patient details:\")\n",
+        "preg = float(input(\"Pregnancies: \"))\n",
+        "glucose = float(input(\"Glucose: \"))\n",
+        "bp = float(input(\"Blood Pressure: \"))\n",
+        "skin = float(input(\"Skin Thickness: \"))\n",
+        "insulin = float(input(\"Insulin: \"))\n",
+        "bmi = float(input(\"BMI: \"))\n",
+        "dpf = float(input(\"Diabetes Pedigree Function: \"))\n",
+        "age = float(input(\"Age: \"))\n",
+        "new_patient = np.array([[preg, glucose, bp, skin, insulin, bmi, dpf, age]])\n",
+        "new_patient_scaled = scaler.transform(new_patient)\n",
+        "prediction = model.predict(new_patient_scaled)\n",
+        "if prediction[0] == 1:\n",
+        "    print(\"\\nResult: The patient is likely DIABETIC\")\n",
+        "else:\n",
+        "    print(\"\\nResult: The patient is likely NOT DIABETIC\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "NZ4QCoaUItMv",
+        "outputId": "17e418af-ae78-491d-c1d4-71c484228570"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model Accuracy: 0.7532467532467533\n",
+            "\n",
+            "Classification Report:\n",
+            "               precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.80      0.83      0.81        99\n",
+            "           1       0.67      0.62      0.64        55\n",
+            "\n",
+            "    accuracy                           0.75       154\n",
+            "   macro avg       0.73      0.72      0.73       154\n",
+            "weighted avg       0.75      0.75      0.75       154\n",
+            "\n",
+            "\n",
+            "Enter patient details:\n",
+            "Pregnancies: 6\n",
+            "Glucose: 5\n",
+            "Blood Pressure: 10\n",
+            "Skin Thickness: 5\n",
+            "Insulin: 12\n",
+            "BMI: 52\n",
+            "Diabetes Pedigree Function: 12\n",
+            "Age: 54\n",
+            "\n",
+            "Result: The patient is likely DIABETIC\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but StandardScaler was fitted with feature names\n",
+            "  warnings.warn(\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
